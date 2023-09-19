@@ -3,6 +3,7 @@ import {apiSlice} from '../../features/reduxApi/apiSlice';
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {persistReducer} from 'redux-persist';
+import tron from '../../debug/reactotron-config';
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
@@ -17,10 +18,11 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware().concat(apiSlice.middleware),
+  enhancers: [tron.createEnhancer!()],
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export type TRootState = ReturnType<typeof store.getState>;
+export type TAppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<TAppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<TRootState> = useSelector;
