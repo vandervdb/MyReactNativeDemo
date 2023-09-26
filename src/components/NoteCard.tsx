@@ -1,38 +1,44 @@
-import React from 'react';
+import React, {useState} from 'react';
 import CardComponent from './CardComponent';
-import tw from '../../lib/tailwind';
 import {Logger} from '../debug/Logger';
 import {DeleteNoteMutationFn} from '../appTypes';
+import {v4} from 'uuid';
 
-type TNoteCardProps = {
+export type TNoteCardProps = {
+  navigation: any;
   item: {item: {id: string; title: string; content: string}};
   deleteNote: DeleteNoteMutationFn;
+  onPress: () => void;
+  resetEditing: () => void;
 };
 const NoteCard = (props: TNoteCardProps) => {
   // Logger.debug('NoteCard Item JSON : ' + JSON.stringify(item));
-  const {id, title, content} = props.item.item;
+  const {id: inputId, title, content} = props.item.item;
+  const id = inputId ? inputId : v4();
+  const [isEditing, setIsEditing] = useState(false);
+
   return (
     <CardComponent
-      contentStyle={tw`mb-2 mr-3 ml-2 bg-gray-light`}
-      title={id}
+      testId={id}
+      title={title}
       content={content}
-      onLongPress={() => props.deleteNote({id, title, content})}
+      onPress={() => {
+        setIsEditing(!isEditing);
+        props.onPress();
+      }}
+      onOkTitle={isEditing ? 'Edit' : undefined}
+      onOk={
+        isEditing
+          ? () => {
+              setIsEditing(false);
+              props.navigation.navigate('EditNoteScreen', {
+                note: {id, title, content},
+              });
+            }
+          : undefined
+      }
+      onCancel={isEditing ? () => setIsEditing(false) : undefined}
     />
-    // <TouchableRipple
-    //   onLongPress={() => {
-    //     deleteNote(item.item);
-    //     // dispatch(
-    //     //   apiSlice.util.invalidateTags([{type: 'Notes', id: item.item.id}]),
-    //     // );
-    //   }}
-    //   onPress={() => onPressNote(item)}>
-    //   <Card style={tw`mb-2 mr-3 ml-2 bg-gray-light`}>
-    //     <Card.Content>
-    //       <Title style={tw`italic font-bold`}> {title}</Title>
-    //       <Paragraph>{content}</Paragraph>
-    //     </Card.Content>
-    //   </Card>
-    // </TouchableRipple>
   );
 };
 

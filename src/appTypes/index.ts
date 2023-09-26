@@ -1,6 +1,13 @@
-import {MutationFunction} from '@reduxjs/toolkit/dist/query/react';
-
-//TODO: add types for navigation
+import {TEditNoteScreenProps} from '../components/screens/EditNoteScreen';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  FetchBaseQueryMeta,
+  MutationDefinition,
+} from '@reduxjs/toolkit/query';
+import {MutationTrigger} from '@reduxjs/toolkit/dist/query/react/buildHooks';
 
 export interface Note {
   readonly id: string;
@@ -11,8 +18,7 @@ export interface NoteState {
   readonly notes: Note[];
 }
 
-export type TRootStackParamList = {};
-
+// API
 export interface DeleteNoteParams {
   id: number;
 }
@@ -22,7 +28,49 @@ export interface DeleteNoteResult {
   message?: string;
 }
 
-export type DeleteNoteMutationFn = MutationFunction<
-  DeleteNoteResult,
-  DeleteNoteParams
+export type MutationFunction<TResult, TVariables = unknown> = (
+  variables: TVariables,
+) => Promise<TResult>;
+
+export type DeleteNoteMutationFn = MutationTrigger<
+  MutationDefinition<
+    Partial<Note> & Pick<Note, 'id'>,
+    BaseQueryFn<
+      string | FetchArgs,
+      unknown,
+      FetchBaseQueryError,
+      {},
+      FetchBaseQueryMeta
+    >,
+    'Notes',
+    NoteState,
+    'api'
+  >
+>;
+
+// Navigation
+export type TRootStackParamList = {
+  HomeScreen: undefined;
+  NoteScreen: undefined;
+  NoteListScreen: undefined;
+  ReduxToolkitScreen: undefined;
+  EditNoteScreen: TEditNoteScreenProps;
+};
+
+export type TNavReduxToolkitScreenProps = NativeStackScreenProps<
+  TRootStackParamList,
+  'ReduxToolkitScreen'
+>;
+export type PNavNoteListScreenProps = NativeStackScreenProps<
+  TRootStackParamList,
+  'NoteListScreen'
+>;
+export type TNavEditNoteScreenProps = NativeStackScreenProps<
+  TRootStackParamList,
+  'EditNoteScreen'
+>;
+
+export type TNavHomeScreenProps = NativeStackScreenProps<
+  TRootStackParamList,
+  'HomeScreen'
 >;

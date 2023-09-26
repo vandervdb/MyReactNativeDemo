@@ -21,29 +21,42 @@ export const apiSlice = createApi({
       },
       providesTags: ['Notes'],
     }),
-    updateNote: builder.mutation<NoteState, Partial<Note> & Pick<Note, 'id'>>({
+    updateNote: builder.mutation<Note, Partial<Note> & Pick<Note, 'id'>>({
       query: ({id, ...patch}) => ({
         url: `notes/${id}`,
         method: 'PATCH',
         body: patch,
       }),
-      invalidatesTags: ['Notes'],
+      invalidatesTags: [{type: 'Notes'}],
       // Pick out data and prevent nested properties in a hook or selector
-      transformResponse: (response: {data: NoteState}) => response.data,
+      transformResponse: (response: {data: Note}) => response.data,
       transformErrorResponse: (response: {status: string | number}) =>
         response.status,
     }),
-    deleteNote: builder.mutation<NoteState, Partial<Note> & Pick<Note, 'id'>>({
+    addNote: builder.mutation<Note, Partial<Note>>({
+      query: note => ({
+        url: 'notes',
+        method: 'POST',
+        body: note,
+      }),
+      // invalidatesTags: (result, error, {id}) => [{type: 'Notes', id}],
+      invalidatesTags: [{type: 'Notes'}],
+    }),
+    deleteNote: builder.mutation<Note, Partial<Note> & Pick<Note, 'id'>>({
       query: ({id}) => ({
         url: `notes/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Notes'],
-      transformResponse: (response: {data: NoteState}) => response.data,
+      invalidatesTags: [{type: 'Notes'}],
+      transformResponse: (response: {data: Note}) => response.data,
     }),
   }),
 });
 
 // Export the auto-generated hook for the `getPosts` query endpoint
-export const {useGetNotesQuery, useUpdateNoteMutation, useDeleteNoteMutation} =
-  apiSlice;
+export const {
+  useGetNotesQuery,
+  useUpdateNoteMutation,
+  useAddNoteMutation,
+  useDeleteNoteMutation,
+} = apiSlice;

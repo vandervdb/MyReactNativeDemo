@@ -1,15 +1,16 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 import CardComponent from '../CardComponent';
-import {Logger} from '../../debug/Logger';
 import tw from '../../../lib/tailwind';
+import {TNavHomeScreenProps} from '../../appTypes';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({navigation}: TNavHomeScreenProps) => {
   console.log('__HomeScreen__');
   return (
-    <View style={tw`bg-gray-dark`}>
+    <View style={tw`bg-gray flex-1`}>
       <Text style={tw`italic font-bold`}>HomeScreen</Text>
       <CardComponent
+        testId={'HomeScreenCard'}
         title={'Redux ToolKit'}
         content={
           'Testing the use of Redux ToolKit \n ' +
